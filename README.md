@@ -1,24 +1,31 @@
-# blog-website
+# Rakesh's Blog
+
+This is a simple blog website created using Vue.js.
 
 ## Project setup
-```
+
+```sh
 npm install
 ```
 
 ### Compiles and hot-reloads for development
-```
+
+```sh
 npm run serve
 ```
 
 ### Compiles and minifies for production
-```
+
+```sh
 npm run build
 ```
 
 ### Lints and fixes files
-```
+
+```sh
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## License
+
+This project is licensed under the MIT License.

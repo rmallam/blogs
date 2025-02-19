@@ -1,0 +1,36 @@
+/* Base styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+  .header, .footer {
+    text-align: center;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .container {
+    padding: 20px;
+  }
+  .header, .footer {
+    text-align: left;
+  }
+}
+
+/* Laptop and desktop styles */
+@media (min-width: 1025px) {
+  .container {
+    padding: 30px;
+  }
+  .header, .footer {
+    text-align: left;
+  }
+}
