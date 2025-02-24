@@ -6,13 +6,13 @@
         <p>Feel free to reach out for collaborations, questions, or just to say hello!</p>
         <div class="social-links">
           <a href="https://github.com/rmallam" target="_blank" class="social-link">
-            <img src="/github.png" alt="GitHub" />
+            <img src="@/assets/github.png" alt="GitHub" />
           </a>
           <a href="https://www.linkedin.com/in/rakeshkumarmallam/" target="_blank" class="social-link">
-            <img src="/linkedin.png" alt="LinkedIn" />
+            <img src="@/assets/linkedin.png" alt="LinkedIn" />
           </a>
           <a href="mailto:mallamrakesh@gmail.com" class="social-link">
-            <img src="/email.png" alt="Email" />
+            <img src="@/assets/email.png" alt="Email" />
           </a>
         </div>
       </div>

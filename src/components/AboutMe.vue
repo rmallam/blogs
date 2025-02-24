@@ -15,13 +15,13 @@
         <img :src="imageSrc" alt="Rakesh Kumar Mallam" @click="expandImage" />
         <div class="icons">
           <a href="mailto:mallamrakesh@gmail.com">
-            <img src="/email.png" alt="Email" class="icon" />
+            <img src="@/assets/email.png" alt="Email" class="icon" />
           </a>
           <a href="https://www.linkedin.com/in/rakeshkumarmallam/" target="_blank">
-            <img src="/linkedin.png" alt="LinkedIn" class="icon" />
+            <img src="@/assets/linkedin.png" alt="LinkedIn" class="icon" />
           </a>
           <a href="https://github.com/rmallam" target="_blank">
-            <img src="/github.png" alt="GitHub" class="icon" />
+            <img src="@/assets/github.png" alt="GitHub" class="icon" />
           </a>
         </div>
       </div>
