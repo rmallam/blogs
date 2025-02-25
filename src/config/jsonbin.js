@@ -1,5 +1,14 @@
+
+
 export const JSONBIN_CONFIG = {
-  BIN_ID: import.meta.env.VITE_JSONBIN_BIN_ID,
-  API_KEY: import.meta.env.VITE_JSONBIN_API_KEY,
-  BASE_URL: import.meta.env.VITE_JSONBIN_BASE_URL || 'https://api.jsonbin.io/v3/b'
+  BIN_ID: process.env.VUE_APP_JSONBIN_BIN_ID,
+  API_KEY: process.env.VUE_APP_JSONBIN_API_KEY,
+  BASE_URL: process.env.VUE_APP_JSONBIN_BASE_URL
 };
+
+// Debug logging
+console.log('Environment variables present:', {
+  BIN_ID: !!process.env.VUE_APP_JSONBIN_BIN_ID,
+  API_KEY: process.env.VUE_APP_JSONBIN_API_KEY,
+  BASE_URL: !!process.env.VUE_APP_JSONBIN_BASE_URL
+});

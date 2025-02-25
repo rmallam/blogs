@@ -78,9 +78,9 @@ export default {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await fetch(`${JSONBIN_CONFIG.BASE_URL}/${JSONBIN_CONFIG.BIN_ID}`, {
+        const response = await fetch(`${process.env.VUE_APP_JSONBIN_BASE_URL}/${process.env.VUE_APP_JSONBIN_BIN_ID}`, {
           headers: {
-            'X-Master-Key': JSONBIN_CONFIG.API_KEY
+            'X-Access-Key': process.env.VUE_APP_JSONBIN_API_KEY
           }
         });
         
@@ -125,16 +125,7 @@ export default {
         allComments[this.blogId].push(newComment);
 
         // Update JSONbin with new structure
-        const updateResponse = await fetch(`${JSONBIN_CONFIG.BASE_URL}/${JSONBIN_CONFIG.BIN_ID}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': JSONBIN_CONFIG.API_KEY
-          },
-          body: JSON.stringify({ blog_comments: allComments })
-        });
-
-        if (!updateResponse.ok) throw new Error('Failed to save comment');
+        await this.saveComments({ blog_comments: allComments });
 
         // Update local state
         this.comments = allComments[this.blogId];
@@ -149,6 +140,21 @@ export default {
         this.error = 'Failed to add comment. Please try again later.';
       } finally {
         this.isLoading = false;
+      }
+    },
+    async saveComments(comments) {
+      try {
+        await fetch(`${process.env.VUE_APP_JSONBIN_BASE_URL}/${process.env.VUE_APP_JSONBIN_BIN_ID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Access-Key': process.env.VUE_APP_JSONBIN_API_KEY
+          },
+          body: JSON.stringify(comments)
+        });
+      } catch (error) {
+        console.error('Error saving comments:', error);
+        this.error = 'Failed to save comments. Please try again later.';
       }
     }
   },

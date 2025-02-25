@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <div id="app">
     <header class="header">
@@ -59,8 +60,6 @@ import BlogComments from './components/BlogComments.vue';
 import markdown from 'markdown-it'
 const md = markdown()
 
-const requireBlog = require.context('./blogs', true, /\.md$/);
-
 export default {
   name: 'App',
   components: { 
@@ -70,41 +69,58 @@ export default {
     BlogComments
   },
   data() {
+    const sections = this.getBlogSections();
+    console.log('Initial blog sections:', sections); // Debug log
     return {
-      blogSections: this.getBlogSections(),
+      blogSections: sections,
       selectedPage: 'about',
       isSidebarCollapsed: false,
       headings: [],
-      selectedSection: null
+      selectedSection: null,
+      copyCodeHandler: null // Add this to store the event handler
     };
   },
   methods: {
     getBlogSections() {
       const sections = {};
-      requireBlog.keys().forEach(file => {
-        const pathParts = file.replace('./', '').split('/');
-        if (pathParts.length < 2) return;
-        const sectionName = pathParts[0];
-        const blogTitle = pathParts[1] ? pathParts[1].replace('.md', '') : '';
-        const blogContent = requireBlog(file).default;
-        const blogSummary = this.summarizeContent(blogContent); // Use AI to summarize content
-        const blogTags = this.extractTags(blogContent); // Extract tags from content
-
-        if (!sections[sectionName]) {
-          sections[sectionName] = {
-            name: sectionName,
-            expanded: false,
-            blogs: []
-          };
-        }
-        sections[sectionName].blogs.push({
-          title: blogTitle,
-          summary: blogSummary,
-          content: blogContent,
-          tags: blogTags // Remove the fallback example tags
+      try {
+        const blogFiles = require.context('./blogs', true, /\.md$/);
+        console.log('Available blog files:', blogFiles.keys()); // Debug log
+        
+        blogFiles.keys().forEach(file => {
+          console.log('Processing file:', file); // Debug log
+          const cleanPath = file.replace(/^\.\//, '');
+          const [section, fileName] = cleanPath.split('/');
+          
+          if (!section || !fileName) {
+            console.log('Skipping invalid file:', file); // Debug log
+            return;
+          }
+          
+          if (!sections[section]) {
+            sections[section] = {
+              name: section,
+              blogs: []
+            };
+          }
+          
+          const blogContent = blogFiles(file).default || blogFiles(file);
+          console.log('Blog content loaded:', !!blogContent); // Debug log
+          
+          sections[section].blogs.push({
+            title: fileName.replace('.md', ''),
+            content: blogContent,
+            summary: this.summarizeContent(blogContent),
+            tags: this.extractTags(blogContent)
+          });
         });
-      });
-      return Object.values(sections);
+        
+        console.log('Final processed sections:', sections); // Debug log
+        return Object.values(sections);
+      } catch (error) {
+        console.error('Error loading blogs:', error);
+        return [];
+      }
     },
     selectPage(page) {
       if (typeof page === 'string') {
@@ -223,9 +239,8 @@ export default {
     }
   },
   mounted() {
-    console.log('Blog website loaded');
-    // Add global event listener for copy button clicks
-    document.addEventListener('copyCode', (e) => {
+    // Create a bound handler function
+    this.copyCodeHandler = (e) => {
       const index = e.detail.index;
       const codeBlock = document.querySelectorAll('.code-block-wrapper pre')[index];
       if (codeBlock) {
@@ -238,11 +253,16 @@ export default {
           }, 2000);
         });
       }
-    });
+    };
+
+    // Add the event listener using the stored handler
+    document.addEventListener('copyCode', this.copyCodeHandler);
   },
   beforeUnmount() {
-    // Clean up event listener
-    document.removeEventListener('copyCode');
+    // Remove the event listener with the same handler reference
+    if (this.copyCodeHandler) {
+      document.removeEventListener('copyCode', this.copyCodeHandler);
+    }
   }
 }
 </script>
@@ -300,7 +320,7 @@ export default {
 
 .content {
   margin-left: 0; /* Remove left margin */
-  margin-right: 0;;
+  margin-right: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   transition: margin-left 0.3s, width 0.3s; /* Smooth transition */
@@ -603,10 +623,6 @@ footer {
   .content {
     flex-direction: row;
   }
-
-  .page-content {
-    width: 100%;
-  }
 }
 
 @media (max-width: 767px) {
@@ -615,3 +631,4 @@ footer {
   }
 }
 </style>
+

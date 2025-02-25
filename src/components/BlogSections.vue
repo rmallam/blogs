@@ -1,13 +1,20 @@
 <template>
   <div class="blog-sections">
     <h2>Blog Categories</h2>
-    <ul>
-      <li v-for="(section, index) in localSections" :key="index">
-        <div @click="selectSection(section)" class="section-item">
-          {{ section.name }}
-        </div>
-      </li>
-    </ul>
+    <div v-if="!sections || sections.length === 0" class="no-blogs">
+      <p>No blog posts found</p>
+      <p class="debug-info">Available sections: {{ sections ? sections.length : 0 }}</p>
+    </div>
+    <div v-else class="sections-list">
+      <div 
+        v-for="section in sections" 
+        :key="section.name"
+        class="section-item"
+        @click="$emit('select-section', section)"
+      >
+        <h3>{{ formatSectionName(section.name) }}</h3>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -15,19 +22,20 @@
 export default {
   name: 'BlogSections',
   props: {
-    sections: Array
+    sections: {
+      type: Array,
+      required: true,
+      default: () => []
+    }
   },
-  data() {
-    return {
-      localSections: this.sections.map(section => ({ ...section, expanded: false }))
-    };
+  mounted() {
+    console.log('BlogSections mounted with sections:', this.sections);
   },
   methods: {
-    toggleSection(index) {
-      this.localSections[index].expanded = !this.localSections[index].expanded;
-    },
-    selectSection(section) {
-      this.$emit('select-section', section);
+    formatSectionName(name) {
+      return name.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
     }
   }
 }
@@ -68,5 +76,17 @@ export default {
 .section-item:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
+}
+
+.debug-info {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.no-blogs {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
 }
 </style>

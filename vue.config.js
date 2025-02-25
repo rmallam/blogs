@@ -1,14 +1,16 @@
-const markdown = require('markdown-it')();
+const { defineConfig } = require('@vue/cli-service')
 
-module.exports = {
-  transpileDependencies: ['vue'],
+module.exports = defineConfig({
   publicPath: process.env.NODE_ENV === 'production' ? '/blogs/' : '/',
-  chainWebpack: config => {
-    config.module
-      .rule('markdown')
-      .test(/\.md$/)
-      .use('raw-loader')
-      .loader('raw-loader')
-      .end();
+  transpileDependencies: true,
+  configureWebpack: {
+    module: {
+      rules: [
+        {
+          test: /\.md$/,
+          type: 'asset/source'
+        }
+      ]
+    }
   }
-};
+})
