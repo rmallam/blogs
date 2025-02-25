@@ -19,18 +19,35 @@
       <div class="form-wrapper">
         <form @submit.prevent="handleSubmit" class="animated-form">
           <div class="form-group">
+            <input 
+              id="name" 
+              v-model.trim="form.name" 
+              type="text" 
+              required 
+              maxlength="100"
+            />
+            <label for="name">Your Name</label>
+            <span v-if="errors.name" class="error-text">{{ errors.name }}</span>
+          </div>
+          <div class="form-group">
             <input id="email" v-model="form.email" type="email" required />
             <label for="email">Your Email</label>
+            <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
           </div>
           <div class="form-group">
-            <input id="subject" v-model="form.subject" type="text" required />
-            <label for="subject">Subject</label>
+            <textarea id="message" v-model="form.message" required></textarea>
+            <label for="message">Message</label>
+            <span v-if="errors.message" class="error-text">{{ errors.message }}</span>
           </div>
-          <div class="form-group">
-            <textarea id="description" v-model="form.description" required></textarea>
-            <label for="description">Message</label>
-          </div>
-          <button type="submit">Send Message</button>
+          <button type="submit" :disabled="sending">
+            {{ sending ? 'Sending...' : 'Send Message' }}
+          </button>
+          <p v-if="status === 'success'" class="success-message">
+            Message sent successfully!
+          </p>
+          <p v-if="status === 'error'" class="error-message">
+            Failed to send message. Please try again.
+          </p>
         </form>
       </div>
     </div>
@@ -38,41 +55,142 @@
 </template>
 
 <script>
+import emailjs from '@emailjs/browser';
+import { EMAILJS_CONFIG } from '../config/emailjs';
+
 export default {
   name: "ContactMe",
   data() {
     return {
       form: {
+        name: "",
         email: "",
-        subject: "",
-        description: ""
+        message: ""
+      },
+      sending: false,
+      status: "",
+      lastSubmissionTime: 0,
+      submissionCount: 0,
+      errors: {
+        name: '',
+        email: '',
+        message: ''
       }
     };
   },
+  created() {
+    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+  },
   methods: {
-    handleSubmit() {
-      // Create email content
-      const emailSubject = encodeURIComponent(this.form.subject);
-      const emailBody = encodeURIComponent(
-        `From: ${this.form.email}\n\n${this.form.description}`
-      );
-      
-      // Create mailto link
-      const mailtoLink = `mailto:mallamrakesh@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-      
-      // Open email client
-      window.location.href = mailtoLink;
-      
-      // Reset form
-      this.form.email = "";
-      this.form.subject = "";
-      this.form.description = "";
-      
-      // Show success message
-      alert("Opening your email client...");
+    validateForm() {
+      let isValid = true;
+      this.errors = {
+        name: '',
+        email: '',
+        message: ''
+      };
+
+      // Name validation
+      if (!this.form.name.trim()) {
+        this.errors.name = 'Name is required';
+        isValid = false;
+      } else if (this.form.name.length > 100) {
+        this.errors.name = 'Name is too long';
+        isValid = false;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.form.email.trim()) {
+        this.errors.email = 'Email is required';
+        isValid = false;
+      } else if (!emailRegex.test(this.form.email)) {
+        this.errors.email = 'Invalid email format';
+        isValid = false;
+      }
+
+      // Message validation
+      if (!this.form.message.trim()) {
+        this.errors.message = 'Message is required';
+        isValid = false;
+      } else if (this.form.message.length > 1000) {
+        this.errors.message = 'Message is too long';
+        isValid = false;
+      }
+
+      return isValid;
+    },
+
+    sanitizeInput(input) {
+      return input
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    },
+
+    checkRateLimit() {
+      const now = Date.now();
+      const oneMinute = 60 * 1000;
+
+      // Reset count if more than a minute has passed
+      if (now - this.lastSubmissionTime > oneMinute) {
+        this.submissionCount = 0;
+      }
+
+      // Allow maximum 3 submissions per minute
+      if (this.submissionCount >= 3) {
+        return false;
+      }
+
+      this.submissionCount++;
+      this.lastSubmissionTime = now;
+      return true;
+    },
+
+    async handleSubmit() {
+      if (!this.validateForm()) {
+        return;
+      }
+
+      if (!this.checkRateLimit()) {
+        this.status = 'error';
+        alert('Too many attempts. Please try again later.');
+        return;
+      }
+
+      this.sending = true;
+      this.status = "";
+
+      try {
+        const templateParams = {
+          from_name: this.sanitizeInput(this.form.name),
+          from_email: this.sanitizeInput(this.form.email),
+          message: this.sanitizeInput(this.form.message),
+          to_name: 'Rakesh Kumar Mallam',
+          reply_to: this.sanitizeInput(this.form.email),
+        };
+
+        await emailjs.send(
+          EMAILJS_CONFIG.SERVICE_ID,
+          EMAILJS_CONFIG.TEMPLATE_ID,
+          templateParams,
+          EMAILJS_CONFIG.PUBLIC_KEY
+        );
+
+        this.status = 'success';
+        this.form.name = "";
+        this.form.email = "";
+        this.form.message = "";
+      } catch (error) {
+        console.error('Email error:', error);
+        this.status = 'error';
+      } finally {
+        this.sending = false;
+      }
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -218,6 +336,13 @@ button {
 button:hover {
   background: #2980b9;
   transform: translateY(-2px);
+}
+
+.error-text {
+  color: #f44336;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
 }
 
 @media (max-width: 768px) {

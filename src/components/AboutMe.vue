@@ -29,6 +29,9 @@
     <div v-if="isImageExpanded" class="image-modal" @click="closeImage">
       <img :src="imageSrc" alt="Rakesh Kumar Mallam" />
     </div>
+    <div class="visitor-counter">
+      <span>Visitors: {{ visitorCount }}</span>
+    </div>
   </article>
 </template>
 
@@ -38,7 +41,8 @@ export default {
   data() {
     return {
       isImageExpanded: false,
-      imageSrc: require('@/assets/rakesh.jpg')
+      imageSrc: require('@/assets/rakesh.jpg'),
+      visitorCount: 0
     };
   },
   methods: {
@@ -47,7 +51,21 @@ export default {
     },
     closeImage() {
       this.isImageExpanded = false;
+    },
+    async incrementVisitorCount() {
+      // For demonstration, we'll use localStorage
+      // In a real app, this should use a backend API
+      const count = parseInt(localStorage.getItem('visitorCount') || '0');
+      const newCount = count + 1;
+      localStorage.setItem('visitorCount', newCount);
+      this.visitorCount = newCount;
     }
+  },
+  mounted() {
+    // Get existing count
+    this.visitorCount = parseInt(localStorage.getItem('visitorCount') || '0');
+    // Increment count for new visit
+    this.incrementVisitorCount();
   }
 }
 </script>
@@ -141,5 +159,30 @@ export default {
 
 .about-me p {
   margin-bottom: 1.5rem;
+}
+
+.visitor-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.5s ease-out;
+  z-index: 100;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>

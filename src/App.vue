@@ -37,6 +37,10 @@
                 <article>
                   <h2>{{ formatTitle(selectedPage.title) }}</h2>
                   <div class="markdown-content" v-html="renderMarkdownWithIds(selectedPage.content)"></div>
+                  <BlogComments 
+                    v-if="selectedPage.title"
+                    :blogId="selectedPage.title"
+                  />
                 </article>
               </div>
             </div>
@@ -51,6 +55,7 @@
 import AboutMe from './components/AboutMe.vue';
 import ContactMe from './components/ContactMe.vue';
 import BlogSections from './components/BlogSections.vue';
+import BlogComments from './components/BlogComments.vue';
 import markdown from 'markdown-it'
 const md = markdown()
 
@@ -58,7 +63,12 @@ const requireBlog = require.context('./blogs', true, /\.md$/);
 
 export default {
   name: 'App',
-  components: { AboutMe, ContactMe, BlogSections },
+  components: { 
+    AboutMe, 
+    ContactMe, 
+    BlogSections,
+    BlogComments
+  },
   data() {
     return {
       blogSections: this.getBlogSections(),
@@ -479,6 +489,7 @@ article {
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   text-align: left;
+  margin-bottom: 2rem;
 }
 
 .markdown-content h1,
