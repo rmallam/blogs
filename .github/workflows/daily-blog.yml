@@ -8,9 +8,6 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    container:
-      image:  ghcr.io/ggerganov/llama.cpp:latest
-      options: --cpus "2.0" --memory 8G
     
     steps:
       - uses: actions/checkout@v3
@@ -21,6 +18,9 @@ jobs:
           curl -L "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_K_M.gguf" \
             -o /github/workspace/models/llama-2-7b-chat.gguf
           chmod 755 /github/workspace/models/llama-2-7b-chat.gguf
+          curl -L https://github.com/ggml-org/llama.cpp/releases/download/b4778/llama-b4778-bin-ubuntu-x64.zip -o /github/workspace/llama.zip
+          unzip /github/workspace/llama.zip -d /github/workspace/
+          
           chown -R $(id -u):$(id -g) .
       
       - uses: actions/setup-node@v3
@@ -34,7 +34,7 @@ jobs:
         run: npm run generate-blog
         env:
           USE_LOCAL_LLM: "true"
-          LLAMA_BINARY_PATH: "/app/tools.sh"
+          LLAMA_BINARY_PATH: "/github/workspace/build/bin/llama-cli"
           LLAMA_MODEL_PATH: "/github/workspace/models/llama-2-7b-chat.gguf"
           # Keep OpenAI as fallback
           VUE_APP_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
