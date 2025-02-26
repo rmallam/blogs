@@ -1,4 +1,4 @@
- Write a technical blog post about Serverless Architecture. Include code examples where relevant. Format in markdown.
+
 Serverless Architecture: The Future of Web Development
 
 Introduction
