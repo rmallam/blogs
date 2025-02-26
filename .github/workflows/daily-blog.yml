@@ -22,7 +22,7 @@ jobs:
             -o /github/workspace/models/llama-2-7b-chat.gguf
           chmod 755 /github/workspace/models/llama-2-7b-chat.gguf
                     # Verify LLaMA binary
-          ls -l /usr/bin/llama
+          llama
           chmod +x /usr/bin/llama
       
       - uses: actions/setup-node@v3
