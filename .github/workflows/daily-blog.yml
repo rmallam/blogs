@@ -9,7 +9,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ggml-org/llama.cpp:full
+      image:  ghcr.io/ggerganov/llama.cpp:latest
       options: --cpus "2.0" --memory 8G
     
     steps:
