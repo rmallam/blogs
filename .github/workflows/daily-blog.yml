@@ -22,7 +22,7 @@ jobs:
           curl -L https://github.com/ggml-org/llama.cpp/releases/download/b4778/llama-b4778-bin-ubuntu-x64.zip -o $GITHUB_WORKSPACE/llama/llama.zip
           unzip $GITHUB_WORKSPACE/llama/llama.zip -d $GITHUB_WORKSPACE/llama
           ls -lrt "$GITHUB_WORKSPACE/llama/build/bin/llama-cli" "$GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf"
-          sudo cp llama/build/bin/libllama.so /usr/local/lib
+          sudo cp $GITHUB_WORKSPACE/llama/build/bin/*.so /usr/local/lib
           sudo ldconfig
           chown -R $(id -u):$(id -g) .
       
