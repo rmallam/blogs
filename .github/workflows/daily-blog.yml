@@ -21,6 +21,7 @@ jobs:
           curl -L "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_K_M.gguf" \
             -o /github/workspace/models/llama-2-7b-chat.gguf
           chmod 755 /github/workspace/models/llama-2-7b-chat.gguf
+          chown -R $(id -u):$(id -g) .
       
       - uses: actions/setup-node@v3
         with:
