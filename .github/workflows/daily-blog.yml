@@ -35,8 +35,8 @@ jobs:
         run: npm run generate-blog
         env:
           USE_LOCAL_LLM: "true"
-          LLAMA_BINARY_PATH: "$GITHUB_WORKSPACE/llama/build/bin/llama-cli"
-          LLAMA_MODEL_PATH: "$GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf"
+          LLAMA_BINARY_PATH: "/home/runner/work/blogs/blogs/llama/build/bin/llama-cli"
+          LLAMA_MODEL_PATH: "/home/runner/work/blogs/blogs/models/llama-2-7b-chat.gguf"
           # Keep OpenAI as fallback
           VUE_APP_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           
