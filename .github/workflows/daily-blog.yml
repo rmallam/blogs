@@ -20,7 +20,7 @@ jobs:
             -o $GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf
           chmod 755 $GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf
           curl -L https://github.com/ggml-org/llama.cpp/releases/download/b4778/llama-b4778-bin-ubuntu-x64.zip -o $GITHUB_WORKSPACE/llama/llama.zip
-          unzip $GITHUB_WORKSPACE/llama.zip -d $GITHUB_WORKSPACE/llama
+          unzip $GITHUB_WORKSPACE/llama/llama.zip -d $GITHUB_WORKSPACE/llama
           
           chown -R $(id -u):$(id -g) .
       
