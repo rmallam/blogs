@@ -1,0 +1,46 @@
+name: Generate Daily Blog
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+  workflow_dispatch:      # Allows manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ggerganov/llama.cpp:full
+      options: --cpus "2.0" --memory 8G
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup LLM
+        run: |
+          mkdir -p /github/workspace/models
+          curl -L "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_K_M.gguf" \
+            -o /github/workspace/models/llama-2-7b-chat.gguf
+          chmod 755 /github/workspace/models/llama-2-7b-chat.gguf
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Generate blog
+        run: npm run generate-blog
+        env:
+          USE_LOCAL_LLM: "true"
+          LLAMA_BINARY_PATH: "/usr/local/bin/main"
+          LLAMA_MODEL_PATH: "/github/workspace/models/llama-2-7b-chat.gguf"
+          # Keep OpenAI as fallback
+          VUE_APP_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add -A
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Add LLaMA-generated blog post" && git push)
