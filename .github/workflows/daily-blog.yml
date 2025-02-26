@@ -14,13 +14,13 @@ jobs:
       
       - name: Setup LLM
         run: |
-          mkdir -p /github/workspace/models
-          mkdir -p /github/workspace/llama
+          mkdir -p $GITHUB_WORKSPACE/models
+          mkdir -p $GITHUB_WORKSPACE/llama
           curl -L "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q4_K_M.gguf" \
-            -o /github/workspace/models/llama-2-7b-chat.gguf
-          chmod 755 /github/workspace/models/llama-2-7b-chat.gguf
-          curl -L https://github.com/ggml-org/llama.cpp/releases/download/b4778/llama-b4778-bin-ubuntu-x64.zip -o /github/workspace/llama/llama.zip
-          unzip /github/workspace/llama.zip -d /github/workspace/llama
+            -o $GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf
+          chmod 755 $GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf
+          curl -L https://github.com/ggml-org/llama.cpp/releases/download/b4778/llama-b4778-bin-ubuntu-x64.zip -o $GITHUB_WORKSPACE/llama/llama.zip
+          unzip $GITHUB_WORKSPACE/llama.zip -d $GITHUB_WORKSPACE/llama
           
           chown -R $(id -u):$(id -g) .
       
@@ -35,8 +35,8 @@ jobs:
         run: npm run generate-blog
         env:
           USE_LOCAL_LLM: "true"
-          LLAMA_BINARY_PATH: "/github/workspace/llama/build/bin/llama-cli"
-          LLAMA_MODEL_PATH: "/github/workspace/models/llama-2-7b-chat.gguf"
+          LLAMA_BINARY_PATH: "$GITHUB_WORKSPACE/llama/build/bin/llama-cli"
+          LLAMA_MODEL_PATH: "$GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf"
           # Keep OpenAI as fallback
           VUE_APP_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           
