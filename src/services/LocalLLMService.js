@@ -6,20 +6,27 @@ const { OpenAI } = require('openai');
 
 class LocalLLMService {
   constructor() {
-    const projectRoot = path.resolve(__dirname, '../../');
-    this.modelPath = path.join(projectRoot, 'models/llama-2-7b-chat.gguf');
-    this.llamaPath = '/usr/local/Cellar/llama.cpp/4778/bin/llama-cli'; // Updated to use Homebrew path
+    // Use environment variables with fallbacks for local development
+    this.modelPath = process.env.LLAMA_MODEL_PATH || path.join(process.cwd(), 'models/llama-2-7b-chat.gguf');
+    this.llamaPath = process.env.LLAMA_BINARY_PATH || '/usr/local/Cellar/llama.cpp/4778/bin/llama-cli';
     
     // Debug logging
-    console.log('Paths:', {
-      projectRoot,
+    console.log('LLM Configuration:', {
       modelPath: this.modelPath,
       llamaPath: this.llamaPath,
+      envVars: {
+        LLAMA_MODEL_PATH: process.env.LLAMA_MODEL_PATH,
+        LLAMA_BINARY_PATH: process.env.LLAMA_BINARY_PATH,
+        PWD: process.cwd()
+      },
       exists: {
         model: fs.existsSync(this.modelPath),
         llama: fs.existsSync(this.llamaPath)
       },
-      permissions: this.getFilePermissions(this.llamaPath)
+      permissions: {
+        model: this.getFilePermissions(this.modelPath),
+        llama: this.getFilePermissions(this.llamaPath)
+      }
     });
 
     this.openai = new OpenAI({
@@ -53,6 +60,15 @@ class LocalLLMService {
   async generateWithLocalLLM(topic) {
     const prompt = `Write a technical blog post about ${topic}. Include code examples where relevant. Format in markdown.`;
     
+    console.log('Launching LLaMA with:', {
+      binary: this.llamaPath,
+      model: this.modelPath,
+      exists: {
+        binary: fs.existsSync(this.llamaPath),
+        model: fs.existsSync(this.modelPath)
+      }
+    });
+
     return new Promise((resolve, reject) => {
       const llama = spawn(this.llamaPath, [
         '-m', this.modelPath,
