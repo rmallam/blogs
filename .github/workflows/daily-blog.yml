@@ -21,7 +21,7 @@ jobs:
           chmod 755 $GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf
           curl -L https://github.com/ggml-org/llama.cpp/releases/download/b4778/llama-b4778-bin-ubuntu-x64.zip -o $GITHUB_WORKSPACE/llama/llama.zip
           unzip $GITHUB_WORKSPACE/llama/llama.zip -d $GITHUB_WORKSPACE/llama
-          
+          ls -lrt "$GITHUB_WORKSPACE/llama/build/bin/llama-cli" "$GITHUB_WORKSPACE/models/llama-2-7b-chat.gguf"
           chown -R $(id -u):$(id -g) .
       
       - uses: actions/setup-node@v3
