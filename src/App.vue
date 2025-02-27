@@ -633,5 +633,93 @@ footer {
     margin-top: 5rem;
   }
 }
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .page-content.fullWidth {
+    width: 100%;
+  }
+
+  .blogs-page {
+    flex-direction: column;
+  }
+
+  .blog-list {
+    margin-left: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .header nav ul {
+    padding: 0 1rem;
+  }
+
+  .header nav ul li {
+    font-size: 1rem;
+    margin: 0 0.5rem;
+  }
+
+  .header nav ul .brand {
+    font-size: 1.2rem;
+  }
+
+  main {
+    padding: 1rem;
+  }
+
+  .markdown-content {
+    width: 95%;
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .header nav ul {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header nav ul .brand {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .blog-list li {
+    padding: 1rem;
+  }
+
+  .blog-list h3 {
+    font-size: 1.2rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .copy-button {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* Fix for mobile viewport height issues */
+@supports (-webkit-touch-callout: none) {
+  .main-content {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Improve touch targets on mobile */
+@media (hover: none) and (pointer: coarse) {
+  .header nav ul li,
+  .blog-list li,
+  .action-button,
+  .copy-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
 </style>
 

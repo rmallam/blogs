@@ -251,4 +251,18 @@ button:disabled {
   margin-bottom: 0.5rem;
   color: #666;
 }
+
+/* Add responsive styles for code blocks */
+@media screen and (max-width: 768px) {
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  code {
+    font-size: 0.9em;
+  }
+}
 </style>

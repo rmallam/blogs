@@ -264,4 +264,62 @@ export default {
 .action-button:hover .button-icon {
   transform: translateX(3px);
 }
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .about-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .text-content {
+    margin-right: 0;
+  }
+
+  .image-content img {
+    max-width: 60%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .about-me {
+    margin: 3rem auto;
+    padding: 1rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .action-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .about-me h2 {
+    font-size: 2rem;
+  }
+
+  .visitor-counter {
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .image-content img {
+    max-width: 80%;
+  }
+
+  .icons {
+    flex-wrap: wrap;
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+  }
+}
 </style>
