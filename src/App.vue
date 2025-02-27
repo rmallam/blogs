@@ -17,7 +17,10 @@
           <div class="content">
             <div class="page-content" :class="{ fullWidth: selectedPage === 'about' || selectedPage==='contact' }">
               <!-- About Me page now rendered via AboutMe component -->
-              <AboutMe v-if="selectedPage === 'about'" />
+              <AboutMe 
+                v-if="selectedPage === 'about'" 
+                @navigate="selectPage"
+              />
               <ContactMe v-else-if="selectedPage === 'contact'" />
               <div v-else-if="selectedPage === 'blogs'" class="blogs-page">
                 <BlogSections :sections="blogSections" @select-section="selectSection" />

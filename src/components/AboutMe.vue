@@ -9,8 +9,19 @@
           I started this blog as a space to document my experiences, share knowledge, and connect with like-minded folks. Whether it’s exploring the latest in cloud infrastructure or reflecting on life’s adventures, you’ll find a mix of technical deep-dives and personal musings here.
           When I’m not architecting solutions, I’m likely planning my next travel adventure with my family, discovering new cuisines, or chasing after my little ones.
           I’d love to hear from you – feel free to drop a comment or connect with me on my social medial below. Let’s learn and grow together!
-              </p>
+        </p>
+        <div class="action-buttons">
+          <button class="action-button" @click="$emit('navigate', 'blogs')">
+            <span class="button-text">Read My Blogs</span>
+            <span class="button-icon">→</span>
+          </button>
+          <button class="action-button" @click="$emit('navigate', 'contact')">
+            <span class="button-text">Contact Me</span>
+            <span class="button-icon">✉</span>
+          </button>
+        </div>
       </div>
+
       <div class="image-content">
         <img :src="imageSrc" alt="Rakesh Kumar Mallam" @click="expandImage" />
         <div class="icons">
@@ -95,6 +106,29 @@ export default {
 .text-content {
   flex: 1;
   margin-right: 2rem;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 30px 0;
+  width: 100%;
+}
+
+.nav-links button {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  color: white;
+  background: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links button:hover {
+  background-color: #555;
 }
 
 .image-content {
@@ -184,5 +218,50 @@ export default {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.action-button {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+  background: linear-gradient(135deg, #3498db 20%, #2980b9 100%);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+.button-text {
+  font-weight: 500;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.action-button:hover .button-icon {
+  transform: translateX(3px);
 }
 </style>
