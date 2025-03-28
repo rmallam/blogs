@@ -167,6 +167,30 @@ export default {
         wrapper.appendChild(copyButton);
         wrapper.appendChild(pre);
       });
+      
+      // Process images to make them responsive
+      const images = doc.querySelectorAll('img');
+      images.forEach(img => {
+        // Add responsive image class
+        img.classList.add('responsive-image');
+        
+        // Set image to fit container
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+        
+        // Create a figure container for better image display
+        const figure = document.createElement('figure');
+        figure.className = 'markdown-image';
+        img.parentNode.insertBefore(figure, img);
+        figure.appendChild(img);
+        
+        // If image has alt text, add it as a caption
+        if (img.alt && !img.alt.startsWith('http')) {
+          const caption = document.createElement('figcaption');
+          caption.textContent = img.alt;
+          figure.appendChild(caption);
+        }
+      });
 
       return doc.body.innerHTML;
     },
@@ -605,6 +629,50 @@ article {
 .markdown-content pre code strong {
   color: #569cd6; /* Bright blue for emphasis */
   font-weight: normal;
+}
+
+/* Enhanced styling for markdown images */
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  margin: 1.5rem auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.markdown-content .responsive-image:hover {
+  transform: scale(1.01);
+}
+
+.markdown-content figure.markdown-image {
+  margin: 2rem 0;
+  max-width: 100%;
+  text-align: center;
+}
+
+.markdown-content figcaption {
+  color: #666;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+/* Disable command prompt styling for code blocks that might interfere with formatting */
+.markdown-content pre code::before {
+  content: none;
+}
+
+/* Responsiveness for various screen sizes */
+@media screen and (max-width: 768px) {
+  .markdown-content figure.markdown-image {
+    margin: 1.5rem 0;
+  }
+  
+  .markdown-content img {
+    margin: 1rem auto;
+  }
 }
 
 footer {

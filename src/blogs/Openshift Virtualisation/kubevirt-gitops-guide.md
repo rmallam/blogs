@@ -1,20 +1,24 @@
-# Modernizing Virtual Machine Management with KubeVirt and GitOps
+# Modernizing Virtual Machine Management with OpenShift Virtualization and GitOps
 
 ## Introduction
 
-The cloud-native revolution has transformed how we build and deploy applications, with containers becoming the preferred packaging format. However, many organizations still have legacy applications running on virtual machines that aren't ready for containerization. This is where KubeVirt comes in - a technology that brings virtual machine management to Kubernetes.
+The cloud-native revolution has transformed how we build and deploy applications, with containers becoming the preferred packaging format. However, many organizations still have legacy applications running on virtual machines that aren't ready for containerization. This is where Openshift Virtualization comes in - a technology that brings virtual machine management to Kubernetes.
 
-In this blog post, we'll explore how to implement a KubeVirt infrastructure using GitOps principles, providing a modern approach to VM management that aligns with cloud-native practices.
+In this blog post, we'll explore how to implement a Openshift Virtualization infrastructure using GitOps principles, providing a modern approach to VM management that aligns with cloud-native practices.
 
-## What is KubeVirt?
+## What is Openshift Virtualization?
 
-KubeVirt is a Kubernetes extension that allows you to run and manage virtual machine workloads alongside container workloads on the same infrastructure. It adds VM-specific custom resource definitions (CRDs) to Kubernetes, enabling you to define, create, and manage VMs using familiar Kubernetes tooling.
+Red Hat® OpenShift® Virtualization, an included feature of Red Hat OpenShift, provides a modern platform for organizations to run and deploy their new and existing virtual machine (VM) workloads. The solution allows for easy migration and management of traditional virtual machines onto a trusted, consistent, and comprehensive hybrid cloud application platform.
 
-Key benefits of KubeVirt include:
+OpenShift Virtualization simplifies the migration of your VMs while offering a path for infrastructure modernization, taking advantage of the simplicity and speed of a cloud-native application platform. It aims to preserve existing virtualization investments while embracing modern management principles, and it’s the foundation for Red Hat’s comprehensive virtualization solution.
+
+Key benefits of OpenShift Virtualization include:
 - Running VMs alongside containers in the same cluster
 - Using Kubernetes tools to manage VM workloads
 - Simplifying infrastructure by consolidating management platforms
 - Enabling gradual migration from VMs to containers
+
+More info [here](https://www.redhat.com/en/engage/15-reasons-adopt-openshift-virtualization-ebook)
 
 ## GitOps: The Foundation for Modern Infrastructure Management
 
@@ -25,34 +29,37 @@ GitOps applies DevOps best practices to infrastructure automation, using Git as 
 3. Changes follow a clear workflow: commit, review, approve, and deploy
 4. The entire history of your infrastructure is versioned and auditable
 
-# 🚀 KubeVirt GitOps Automation - How to
+# 🚀 OpenShift Virtualization GitOps Automation - How to
 
-<div align="center">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![OpenShift](https://img.shields.io/badge/OpenShift-4.10+-red.svg)](https://www.openshift.com/)
 [![ArgoCD](https://img.shields.io/badge/ArgoCD-Powered-green.svg)](https://argoproj.github.io/cd/)
 
-<img src="https://raw.githubusercontent.com/kubevirt/community/main/logo/KubeVirt_icon.png" alt="KubeVirt Logo" width="200"/>
 
-**A GitOps approach to managing KubeVirt virtualization on OpenShift clusters**
-</div>
+**A GitOps approach to managing OpenShift Virtualization virtualization on OpenShift clusters**
+
 
 ---
 
 ## 📋 Overview
 
-This [https://github.com/rmallam/kubevirt-gitops] repository contains automation scripts and configuration for setting up a GitOps workflow using Argo CD (OpenShift GitOps) to manage KubeVirt resources. The project provides a declarative approach to managing virtual machines and related resources on OpenShift.
+This [GIT repository](https://github.com/rmallam/kubevirt-gitops)  contains automation scripts and configuration for setting up a GitOps workflow using Argo CD (OpenShift GitOps) to manage OpenShift Virtualization resources. The project provides a declarative approach to managing virtual machines and related resources on OpenShift.
 
 ## ✅ Prerequisites
 
 - An OpenShift cluster 4.10+ with cluster-admin access
 - `oc` command-line tool installed and configured
+- `virtctl` command-line tool installed (optional)
 - Basic understanding of GitOps principles and Argo CD
 
 ## 🚦 Quick Start
+### Openshift login (OpenShift GitOps)
+```bash
+ oc login -u username -p password openshiftapi 
+```
 
-### 1. Install Argo CD (OpenShift GitOps)
+### Install Argo CD (OpenShift GitOps)
 
 Run the installation script:
 
@@ -63,239 +70,203 @@ chmod +x install-argo.sh
 # Run the script
 ./install-argo.sh
 ```
+This script will install openshift gitops operator and output the details of the argocd URL, username and password as shown below.
 
-## 🔒 How to use private git repo with ArgoCD
+ ```bash
+ $./install-argo.sh
+[2025-03-28 14:15:02] Retrieving ArgoCD access information...
 
-If your repo is private, run the following command to add the GitHub token to ArgoCD:
+=== ArgoCD Access Information ===
+ArgoCD URL: https://openshift-gitops-server-openshift-gitops.test.openshiftapps.com
+Username: admin
+Password: dummy
+```
+
+![argocd](argo-dashboard.png)
+## 🔒 How to use private git repo with ArgoCD?
+
+If your repo is private, argocd will need access to pull the code from your repo. Run the following command to add the GitHub token to ArgoCD.
+
+[How to get github token?](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 
 ```bash
 SERVER_URL=$(oc get routes openshift-gitops-server -n openshift-gitops -o jsonpath='{.status.ingress[0].host}')
 ADMIN_PASSWD=$(oc get secret openshift-gitops-cluster -n openshift-gitops -o jsonpath='{.data.admin\.password}' | base64 -d)
 argocd login --username admin --password ${ADMIN_PASSWD} ${SERVER_URL} --grpc-web
-argocd repo add https://github.com/rmallam/kubevirt-gitops --username rmallam --password gitpat #replace this with the right git token
+argocd repo add https://github.com/rmallam/OpenShift Virtualization-gitops --username rmallam --password gitpat #replace this with the right git token
 ```
 
-## 📦 Install Operator
+## 📦 Install Openshift virtualisation Operator
 
-Apply the infra-appset.yaml to deploy operators:
+In this section, We will be installing the operators in the git-ops way. The helm chart [here](https://github.com/rmallam/kubevirt-gitops/tree/main/infrastructure/operators) will be used to deploy all the required operators, based on the definition in the values file.
+
+the list of subscriptions in the values file with enabled: true will be deployed in the cluster. 
+
+```yaml
+channel: stable
+version: 4.15.8
+subscriptions:
+  - name: advanced-cluster-management
+    namespace: open-cluster-management
+    channel: release-2.10
+    source: redhat-operators
+    enabled: false
+  - name: kubevirt-hyperconverged
+    namespace: openshift-cnv
+    channel: stable
+    source: redhat-operators
+    enabled: true
+```
+This can either be deployed manually running in the command from the infrastructure folder  
+```helm install operators ./operators```
+or using argocd application. Apply the infra-appset.yaml to deploy operators
 
 ```bash
 oc apply -f argo-apps/infra-appset.yaml
 ```
+This will create an argo application called operators and deploys the helm chart in the cluster.
 
-## 📝 Additional Notes for AWS Virtualization
+![argocd](argo-operator-application.png)
+## 📝 Additional Notes
 
 ### ROSA (Red Hat OpenShift Service on AWS)
 
-Adding a baremetal machinepool for ROSA to run virtualization workloads:
+Adding a bar metal machine pool for ROSA to run virtualization workloads:
 
 ```bash
 rosa create machinepools -c $(rosa list clusters | awk -F " " '{print $2}' | grep -v NAME) --instance-type m5.metal --name virt-pool --replicas 3
 ```
+We have now finished installing all the required components to run a VM on openshift. lets deploy the VM's now.
 
-### EFS (Elastic File System)
+## 🔄  Deploying the virtual machine.
 
-Create an EFS filesystem named "pythontest" using the AWS CLI:
+We created a helm chart to deploy virtual machines easily into the openshift clusters. Refer [here](https://github.com/rmallam/kubevirt-gitops/tree/main/vm-examples/helm/fedora-vm) to review the helm chart.
 
-```bash
-# Get your VPC ID where the ROSA cluster is running
-VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=*rosa*" --query "Vpcs[0].VpcId" --output text)
-
-# Create a security group for the EFS filesystem
-SECURITY_GROUP_ID=$(aws ec2 create-security-group \
-  --group-name EFS-pythontest-SG \
-  --description "Security group for EFS pythontest" \
-  --vpc-id $VPC_ID \
-  --output text --query 'GroupId')
-
-# Allow inbound NFS traffic from anywhere
-aws ec2 authorize-security-group-ingress \
-  --group-id $SECURITY_GROUP_ID \
-  --protocol tcp \
-  --port 2049 \
-  --cidr 0.0.0.0/0
-
-# Create the EFS filesystem
-EFS_ID=$(aws efs create-file-system \
-  --creation-token pythontest \
-  --tags Key=Name,Value=pythontest \
-  --encrypted \
-  --performance-mode generalPurpose \
-  --throughput-mode bursting \
-  --output text --query 'FileSystemId')
-
-echo "Created EFS filesystem with ID: $EFS_ID"
-
-# Create mount targets in all subnets of the VPC
-for SUBNET_ID in $(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPC_ID" --query "Subnets[*].SubnetId" --output text); do
-  aws efs create-mount-target \
-    --file-system-id $EFS_ID \
-    --subnet-id $SUBNET_ID \
-    --security-groups $SECURITY_GROUP_ID
-done
-
-echo "EFS filesystem 'pythontest' ($EFS_ID) has been created and configured."
-```
-
-Use this EFS filesystem with the same VPC as your ROSA cluster. The security group is configured to accept connections from anywhere, which is convenient for testing but should be restricted in production environments.
-
-## 🏷️ Node Labeling for Disaster Recovery
-
-Choose one or more nodes for DR sites and label them as DR:
+We will be using the argo application set to deploy this Helm chart which will deploy the virtual machine on openshift.
 
 ```bash
-oc label node ip-10-0-47-96.us-east-2.compute.internal site=dr
-```
+oc apply -f vm-examples/argo-apps/helm-appset.yaml
 
-Choose one or more nodes for primary sites and label them as primary:
+applicationset.argoproj.io/virtualmachines-stretch-application-set created
+```
+This will create an argo app and deploy the vm into openshift.
+
+![fedora-vm-progressing](fedora-vm-progressing.png)
+
+As you can see in the image above, All the resources required for the virtual machine to run are being deployed. The status moves from progressing to Healthy in Argo once the changes have been completed deployed.
+
+![fedora-vm-healthy](fedora-vm-healthy.png)
+
+ use the oc cli to check if the virtual machine is running.
 
 ```bash
-oc label node ip-10-0-47-116.us-east-2.compute.internal site=primary
+$oc get vm
+NAME        AGE     STATUS    READY
+fedora-vm   4m32s   Running   True
 ```
 
-copy from primary to DR
+To login to the virtual machine, You can either use the virtctl or the load balancer service that gets created as part of this deployment.
 
-```
-ssh pydev@aacb75bd6fea848cc875fd8e873f7b04-237625449.us-east-2.elb.amazonaws.com "rsync -avz --timeout=10 /opt/efs/logs/requests.log pydev@a60e637e82e874d6b93c2ccb9056ad92-433074728.us-east-2.elb.amazonaws.com:/opt/efs/logs/"
-```
-
-## 🔄  Architecture Overview  - Stretch Cluster Deployment
-
-This repository provides configurations for deploying VMs in a stretch cluster configuration, where VMs are specifically placed on nodes in primary or DR sites using node selectors.
-
-### Node Labeling for Stretch Clusters
-
-Before deploying VMs, ensure your nodes are properly labeled to indicate their site affinity:
+To configure different users access to this VM, update the cloud-init.yaml secret with the required users and passwords.
 
 ```bash
-# Label nodes for primary site
-oc label node <primary-node-name> site=primary
+virtctl console fedora-vm
+Successfully connected to fedora-vm console. The escape sequence is ^]
 
-# Label nodes for DR site
-oc label node <dr-node-name> site=dr
+logger-vm-primary-site login: rakesh
+Password:
+Last login: Fri Mar 28 05:25:03 on ttyS0
+[rakesh@logger-vm-primary-site ~]$
 ```
-
-### Stretch Cluster Helm Chart
-
-The `stretchtest` Helm chart is designed specifically for stretch cluster deployments:
 
 ```bash
-# Deploy the stretch cluster ApplicationSet
-oc apply -f argo-apps/stretch-virtualmachines-appset.yaml
+ssh rakesh@a1bc5c65622b14596b526f7eca317280-730837299.us-east-1.elb.amazonaws.com
+Warning: Permanently added 'a1bc5c65622b14596b526f7eca317280-730837299.us-east-1.elb.amazonaws.com' (ED25519) to the list of known hosts.
+Last login: Fri Mar 28 05:26:05 2025
+[rakesh@logger-vm-primary-site ~]$
 ```
+## Control the state of VM using GITOPS
 
-This will create argo apps to deploy VMs to both primary and DR sites using the appropriate values files.
+To control the state of the VM, Update the runStrategy value in values-primary.yaml file to the desired value and push the changes to git repo. if the desired state is different to the one from the cluster, Argocd will sync the changes and the VM will move the desired state.
 
-### Sample Values Files
-
-The following values files demonstrate how to use nodeSelectors to target specific sites:
-
-#### Primary Site Configuration (values.yaml)
+lets change the runStrategy from Always which is current to "Halted" to stop the VM.
 
 ```yaml
-# VM Configuration for Primary Site
-vmName: python-app-primary
-image: fedora
-cores: 2
-memory: 4Gi
-size: 30Gi
-nodeSelector:
-  site: primary
+hostname:  logger-vm-primary-site
+
+# Node placement configuration
+# To use nodeSelector, uncomment and adjust the following:
+# nodeSelector: 
+#   #beta.kubernetes.io/instance-type: c6i.metal
+#   site: primary
+# 
+# To disable nodeSelector completely, use an empty map:
+#nodeSelector: {}
+
+runStrategy: Halted #options: Halted, RerunOnFailure, Always, Manual
+``` 
+
+Once this is done, Argocd will sync the changes and the VM will stop.
+
+![fedora-vm-stopped](fedora-vm-argo-stop.png)
+
+```bash
+$oc get vm
+NAME        AGE   STATUS    READY
+fedora-vm   21m   Stopped   False
 ```
 
-#### DR Site Configuration (values-dr.yaml)
-
 ```yaml
-# VM Configuration for DR Site
-vmName: python-app-dr
-image: fedora
-cores: 1
-memory: 2Gi
-size: 30Gi
-nodeSelector:
-  site: dr
-standbyMode: true  # Indicates this is a standby VM
-```
-
-### Using NodeSelectors in VM Templates
-
-The VM templates in the Helm chart use these nodeSelector values to ensure VMs are scheduled on the appropriate nodes:
-
-```yaml
+$oc get vm fedora-vm -o yaml
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
-metadata:
-  name: {{ .Values.vmName }}
+...
 spec:
-  running: true
-  template:
+  dataVolumeTemplates:
+  - metadata:
+      creationTimestamp: null
+      name: fedora-vm
     spec:
-      domain:
-        // ...VM specs...
-      nodeSelector:
-{{ toYaml .Values.nodeSelector | indent 8 }}
+      preallocation: false
+      source:
+        http:
+          url: https://download.fedoraproject.org/pub/fedora/linux/releases/40/Cloud/x86_64/images/Fedora-Cloud-Base-UEFI-UKI.x86_64-40-1.14.qcow2
+      storage:
+        resources:
+          requests:
+            storage: 30Gi
+        storageClassName: gp3-csi
+  runStrategy: **Halted**
+  template:
+  ....
 ```
+Update the runStrategy back to Always in Values-common.yaml and push it to git repo to start the VM.
 
-This approach allows for a clear separation between primary and DR site VMs, making it easier to manage and maintain a resilient architecture.
+```yaml
+hostname:  logger-vm-primary-site
 
-## Architecture Overview  - Split cluster
+# Node placement configuration
+# To use nodeSelector, uncomment and adjust the following:
+# nodeSelector: 
+#   #beta.kubernetes.io/instance-type: c6i.metal
+#   site: primary
+# 
+# To disable nodeSelector completely, use an empty map:
+#nodeSelector: {}
 
-The following diagram illustrates the cluster architecture with bidirectional rsync between primary and DR sites in a two cluster scenario:
-
-![Fedora VM with EFS DR Architecture](Stretch-architecture.png)
-
-### Key Components
-
-- **Python Application VMs**: Fedora VMs running Python applications
-  - Primary site: Active application serving requests
-  - DR site: Standby application that activates when primary is down
-
-- **RSYNC Service VMs**: Dedicated VMs that handle log synchronization
-  - Monitor log files using inotify for real-time change detection
-  - Bidirectional synchronization ensures both sites have updated logs
-  - Conflict resolution to handle concurrent writes
-
-- **External EFS Storage**: Provides persistent storage for logs
-  - Each site has its own EFS storage
-  - Logs written to EFS are synchronized between sites
-
-## Directory Structure
-
-- `/argo-apps`: ArgoCD ApplicationSet configurations
-- `/virtualmachines`: Helm charts for different VM configurations
-  - `/virtualmachines/rsyncapp`: Bidirectional rsync VM configuration
-  - `/virtualmachines/stretchtest`: Stretched application testing environment
-
-## Deployment Methods
-
-The VMs can be deployed using ArgoCD ApplicationSets. For example, to deploy the stretch cluster configuration:
+runStrategy: Always #options: Halted, RerunOnFailure, Always, Manual
+``` 
+![fedora-vm-stopped](fedora-vm-argo-start.png)
 
 ```bash
-kubectl apply -f argo-apps/stretch-virtualmachines-appset.yaml
-```
-
-This will deploy both primary and DR site VMs with different configurations based on their respective values files.
-
-## How Bidirectional Sync Works
-
-1. Python apps write logs to local EFS storage
-2. RSYNC VMs monitor log files for changes
-3. When changes are detected, logs are synchronized to the remote site
-4. Both sites maintain merged, deduplicated copies of all logs
-5. DR site can take over operations with all historical logs available
-
-## Configuring EFS Mounts
-
-EFS storage is mounted at VM startup via cloud-init configurations. See `virtualmachines/rsyncapp/templates/cloud-init.yaml` for details.
-**primary** : sudo mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 10.0.163.16:/ /opt/efs
-**secondary** : sudo mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 10.0.57.188:/ /opt/efs
----
+oc get vm
+NAME        AGE   STATUS    READY
+fedora-vm   28m   Running   True
 
 ```
-oc get node -l beta.kubernetes.io/instance-type=c6i.metal
-oc get node -l beta.kubernetes.io/instance-type=m5.metal
-```
 
-<div align="center">
-<p>Made with ❤️ for the OpenShift & KubeVirt community</p>
-</div>
+## Conclusion:
+
+Red Hat OpenShift Virtualization offers a unified, scalable platform for migrating traditional virtual machines to Openshift which offer an common platform for both containers and VM's. It ensures consistent hybrid management and supports modernization efforts, enabling organizations to efficiently manage and deploy VM and container workloads with a comprehensive set of development and operations tools. It integrates seamlessly with existing tools like OpenShift GitOps, allowing for efficient management of workloads. 
+
+Using GITOPS to manage the workloads will help in reducing any manual errors and helps to track the changes easily.
