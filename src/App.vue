@@ -4,10 +4,10 @@
     <header class="header">
       <nav>
         <ul>
-          <li class="brand" @click="selectPage('about')">R's Blog</li>
-          <li @click="selectPage('about')">Home</li>
-          <li @click="selectPage('blogs')">Blogs</li>
-          <li @click="selectPage('contact')">Contact Me</li>
+          <li class="brand" @click="navigateTo('about')">R's Blog</li>
+          <li @click="navigateTo('about')">Home</li>
+          <li @click="navigateTo('blogs')">Blogs</li>
+          <li @click="navigateTo('contact')">Contact Me</li>
         </ul>
       </nav>
     </header>
@@ -19,7 +19,7 @@
               <!-- About Me page now rendered via AboutMe component -->
               <AboutMe 
                 v-if="selectedPage === 'about'" 
-                @navigate="selectPage"
+                @navigate="navigateTo"
               />
               <ContactMe v-else-if="selectedPage === 'contact'" />
               <div v-else-if="selectedPage === 'blogs'" class="blogs-page">
@@ -27,7 +27,7 @@
                 <div class="blog-list" v-if="selectedSection">
                   <h2>{{ selectedSection.name }}</h2>
                   <ul>
-                    <li v-for="(blog, index) in selectedSection.blogs" :key="index" @click="selectPage(blog)">
+                    <li v-for="(blog, index) in selectedSection.blogs" :key="index" @click="navigateToBlog(selectedSection.name, blog.title)">
                       <h3>{{ formatTitle(blog.title) }}</h3>
                       <p>{{ blog.summary }}</p>
                       <div class="tags">
@@ -39,11 +39,16 @@
               </div>
               <div v-else-if="selectedPage !== null && selectedPage !== 'blogs'">
                 <article>
-                  <h2>{{ formatTitle(selectedPage.title) }}</h2>
-                  <div class="markdown-content" v-html="renderMarkdownWithIds(selectedPage.content)"></div>
+                  <h2>{{ formatTitle(currentBlog.title) }}</h2>
+                  <div class="share-link">
+                    <button @click="copyShareLink" class="share-button">
+                      <span>{{ shareButtonText }}</span>
+                    </button>
+                  </div>
+                  <div class="markdown-content" v-html="renderMarkdownWithIds(currentBlog.content)"></div>
                   <BlogComments 
-                    v-if="selectedPage.title"
-                    :blogId="selectedPage.title"
+                    v-if="currentBlog.title"
+                    :blogId="currentBlog.title"
                   />
                 </article>
               </div>
@@ -80,7 +85,9 @@ export default {
       isSidebarCollapsed: false,
       headings: [],
       selectedSection: null,
-      copyCodeHandler: null // Add this to store the event handler
+      copyCodeHandler: null, // Add this to store the event handler
+      currentBlog: {},
+      shareButtonText: 'Copy Share Link'
     };
   },
   methods: {
@@ -130,6 +137,7 @@ export default {
         this.selectedPage = page;
       } else {
         this.selectedPage = page;
+        this.currentBlog = page;
         if (page && page.content) {
           this.headings = this.extractHeadings(page.content);
         }
@@ -137,9 +145,58 @@ export default {
     },
     selectSection(section) {
       this.selectedSection = section;
+      // Update URL when selecting a section
+      history.pushState(
+        { page: 'blogs', section: section.name }, 
+        `Blogs: ${section.name}`, 
+        `#/blogs/${encodeURIComponent(section.name)}`
+      );
+    },
+    navigateTo(page) {
+      if (page === 'about') {
+        history.pushState({ page: 'about' }, 'About', '#/about');
+      } else if (page === 'blogs') {
+        history.pushState({ page: 'blogs' }, 'Blogs', '#/blogs');
+      } else if (page === 'contact') {
+        history.pushState({ page: 'contact' }, 'Contact', '#/contact');
+      }
+      this.selectPage(page);
+    },
+    navigateToBlog(section, blogTitle) {
+      const blog = this.findBlogByTitleAndSection(section, blogTitle);
+      if (blog) {
+        this.currentBlog = blog;
+        this.selectPage(blog);
+        
+        // Create a URL-friendly version of the blog title
+        const urlFriendlyTitle = encodeURIComponent(blogTitle.replace(/\s+/g, '-').toLowerCase());
+        
+        // Update the URL with the blog info
+        history.pushState(
+          { page: 'blog', section, title: blogTitle }, 
+          blogTitle, 
+          `#/blogs/${encodeURIComponent(section)}/${urlFriendlyTitle}`
+        );
+      }
+    },
+    findBlogByTitleAndSection(sectionName, blogTitle) {
+      const section = this.blogSections.find(s => s.name === sectionName);
+      if (section) {
+        return section.blogs.find(blog => blog.title === blogTitle);
+      }
+      return null;
+    },
+    copyShareLink() {
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        this.shareButtonText = 'Link Copied!';
+        setTimeout(() => {
+          this.shareButtonText = 'Copy Share Link';
+        }, 2000);
+      });
     },
     goBackToBlogs() {
-      this.selectedPage = 'blogs';
+      this.navigateTo('blogs');
     },
     renderMarkdown(content) {
       return md.render(content)
@@ -263,10 +320,69 @@ export default {
     },
     formatTitle(title) {
       return title.replace(/_/g, ' ');
+    },
+    handleInitialNavigation() {
+      // Parse the current URL hash to determine what to show
+      const hash = window.location.hash;
+      
+      if (!hash || hash === '#/' || hash === '#/about') {
+        this.navigateTo('about');
+      } else if (hash === '#/blogs') {
+        this.navigateTo('blogs');
+      } else if (hash === '#/contact') {
+        this.navigateTo('contact');
+      } else if (hash.startsWith('#/blogs/')) {
+        // Handle blog section or specific blog post
+        const parts = hash.substring(8).split('/');
+        
+        if (parts.length >= 1) {
+          const sectionName = decodeURIComponent(parts[0]);
+          const section = this.blogSections.find(s => s.name === sectionName);
+          
+          if (section) {
+            this.selectPage('blogs');
+            this.selectSection(section);
+            
+            // If there's a specific blog post
+            if (parts.length >= 2) {
+              const urlFriendlyTitle = parts[1];
+              // Find the blog by converting all titles to URL-friendly format and comparing
+              const blog = section.blogs.find(b => 
+                b.title.replace(/\s+/g, '-').toLowerCase() === decodeURIComponent(urlFriendlyTitle).toLowerCase()
+              );
+              
+              if (blog) {
+                this.navigateToBlog(sectionName, blog.title);
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    handlePopState(event) {
+      if (event.state) {
+        if (event.state.page === 'about' || event.state.page === 'blogs' || event.state.page === 'contact') {
+          this.selectPage(event.state.page);
+          
+          if (event.state.page === 'blogs' && event.state.section) {
+            const section = this.blogSections.find(s => s.name === event.state.section);
+            if (section) {
+              this.selectSection(section);
+            }
+          }
+        } else if (event.state.page === 'blog') {
+          const blog = this.findBlogByTitleAndSection(event.state.section, event.state.title);
+          if (blog) {
+            this.currentBlog = blog;
+            this.selectPage(blog);
+          }
+        }
+      }
     }
   },
   mounted() {
-    // Create a bound handler function
+    // Handle existing event listeners
     this.copyCodeHandler = (e) => {
       const index = e.detail.index;
       const codeBlock = document.querySelectorAll('.code-block-wrapper pre')[index];
@@ -281,15 +397,20 @@ export default {
         });
       }
     };
-
-    // Add the event listener using the stored handler
     document.addEventListener('copyCode', this.copyCodeHandler);
+    
+    // Handle URL-based navigation on page load
+    this.handleInitialNavigation();
+    
+    // Listen for back/forward navigation
+    window.addEventListener('popstate', this.handlePopState);
   },
   beforeUnmount() {
-    // Remove the event listener with the same handler reference
+    // Remove event listeners
     if (this.copyCodeHandler) {
       document.removeEventListener('copyCode', this.copyCodeHandler);
     }
+    window.removeEventListener('popstate', this.handlePopState);
   }
 }
 </script>
@@ -788,6 +909,30 @@ footer {
     min-height: 44px;
     min-width: 44px;
   }
+}
+
+.share-link {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.share-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-button:hover {
+  background-color: #2980b9;
 }
 </style>
 
