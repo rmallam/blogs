@@ -23,7 +23,7 @@ cd blogs
 Write your blog post in Markdown format. Some guidelines:
 
 - Use clear, concise language
-- Include relevant images in an the **public** folder
+- Include relevant images in the **public** folder
 - Add code snippets when necessary
 - Structure your content with headings
 - Include a brief author bio at the end (optional)
