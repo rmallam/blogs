@@ -934,5 +934,193 @@ footer {
 .share-button:hover {
   background-color: #2980b9;
 }
+
+/* Add responsive CSS variables at the root level */
+:root {
+  --content-width: 90%;
+  --content-max-width: 1200px;
+  --content-padding: 1rem;
+  --font-size-base: 1rem;
+  --line-height-base: 1.8;
+  --border-radius: 8px;
+  --shadow-default: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Updated markdown-content styling with responsive values */
+.markdown-content {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--content-padding);
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-default);
+  text-align: left;
+  margin-bottom: 2rem;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+}
+
+/* Responsive code blocks */
+.markdown-content pre {
+  position: relative;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: calc(1.5 * var(--content-padding)) var(--content-padding) var(--content-padding);
+  border-radius: calc(var(--border-radius) - 2px);
+  overflow-x: auto;
+  margin: var(--content-padding) 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  width: calc(100% + 0px);
+  box-sizing: border-box;
+  font-size: calc(var(--font-size-base) * 0.95);
+}
+
+.markdown-content pre code {
+  font-size: inherit;
+  line-height: var(--line-height-base);
+  white-space: pre;
+  overflow-wrap: normal;
+  padding: 0;
+}
+
+/* Enhanced image responsiveness */
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--border-radius);
+  margin: var(--content-padding) auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Media queries using relative sizing */
+@media screen and (max-width: 1024px) {
+  :root {
+    --content-width: 95%;
+    --content-padding: 0.9rem;
+    --font-size-base: 0.95rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    --content-width: 98%;
+    --content-padding: 0.8rem;
+    --font-size-base: 0.95rem;
+    --border-radius: 6px;
+  }
+  
+  .markdown-content {
+    text-align: left;
+  }
+  
+  .markdown-content pre {
+    margin: calc(var(--content-padding) * 0.8) calc(var(--content-padding) * -0.5);
+    padding: calc(var(--content-padding) * 2) calc(var(--content-padding) * 0.75) calc(var(--content-padding) * 0.75);
+    width: calc(100% + var(--content-padding));
+    border-radius: calc(var(--border-radius) * 0.8);
+    font-size: calc(var(--font-size-base) * 0.9);
+  }
+  
+  /* Use viewport-relative units for spacing */
+  .markdown-content figure.markdown-image {
+    margin: 3vh 0;
+  }
+  
+  .copy-button {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: calc(var(--font-size-base) * 0.75);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :root {
+    --content-width: 100%;
+    --content-padding: 0.7rem;
+    --font-size-base: 0.9rem;
+    --line-height-base: 1.6;
+    --border-radius: 5px;
+  }
+  
+  .markdown-content {
+    padding: var(--content-padding);
+  }
+  
+  .markdown-content pre {
+    font-size: calc(var(--font-size-base) * 0.85);
+    padding-top: calc(var(--content-padding) * 1.8);
+  }
+  
+  /* Responsive typography */
+  .markdown-content h1 { font-size: calc(var(--font-size-base) * 1.7); }
+  .markdown-content h2 { font-size: calc(var(--font-size-base) * 1.45); }
+  .markdown-content h3 { font-size: calc(var(--font-size-base) * 1.2); }
+  .markdown-content p, 
+  .markdown-content li { font-size: var(--font-size-base); }
+  
+  /* Tables need to be handled specially */
+  .markdown-content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Viewport-height based adjustments */
+@media screen and (max-height: 700px) {
+  .markdown-content {
+    margin-bottom: 1.5rem;
+  }
+  
+  .markdown-content figure.markdown-image {
+    margin: 2vh 0;
+  }
+}
+
+/* Dynamic viewport-based sizing for small screens */
+@media screen and (max-width: 360px) {
+  :root {
+    --content-padding: 0.6rem;
+    --font-size-base: 0.85rem;
+  }
+  
+  .markdown-content pre {
+    font-size: calc(var(--font-size-base) * 0.8);
+    padding-top: calc(var(--content-padding) * 1.3);
+  }
+  
+  .copy-button {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Resolution-based adjustments for high-density displays */
+@media 
+(-webkit-min-device-pixel-ratio: 2), 
+(min-resolution: 192dpi) {
+  .markdown-content {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .markdown-content img {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Orientation adjustments */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .markdown-content {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .markdown-content pre {
+    max-height: 60vh;
+  }
+}
 </style>
 
