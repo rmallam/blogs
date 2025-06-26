@@ -57,6 +57,7 @@
         </main>
       </div>
     </div>
+    <ChatbotWidget /> <!-- Add the ChatbotWidget to the template -->
   </div>
 </template>
 
@@ -65,6 +66,7 @@ import AboutMe from './components/AboutMe.vue';
 import ContactMe from './components/ContactMe.vue';
 import BlogSections from './components/BlogSections.vue';
 import BlogComments from './components/BlogComments.vue';
+import ChatbotWidget from './components/Chatbot.vue'; // Import the Chatbot component
 import markdown from 'markdown-it'
 const md = markdown()
 
@@ -74,7 +76,8 @@ export default {
     AboutMe, 
     ContactMe, 
     BlogSections,
-    BlogComments
+    BlogComments,
+    ChatbotWidget // Register the Chatbot component
   },
   data() {
     const sections = this.getBlogSections();

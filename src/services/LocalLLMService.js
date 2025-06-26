@@ -133,6 +133,45 @@ class LocalLLMService {
       tags: ['ai_generated', topic.toLowerCase()]
     };
   }
+
+  async getChatbotResponse(userPrompt) {
+    // For now, we'll primarily use OpenAI for chat, as local LLM setup for chat is more complex
+    // and the existing local LLM is geared towards blog post generation.
+    try {
+      const completion = await this.openai.chat.completions.create({
+        model: "gpt-3.5-turbo", // Or any other preferred model
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert AI assistant specializing in Kubernetes. Provide clear, concise, and accurate information about Kubernetes concepts, best practices, and troubleshooting."
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        temperature: 0.5, // Slightly lower temperature for more factual responses
+        max_tokens: 500 // Adjust as needed
+      });
+
+      if (completion.choices && completion.choices.length > 0 && completion.choices[0].message) {
+        return completion.choices[0].message.content.trim();
+      } else {
+        console.error('OpenAI response format error:', completion);
+        return "Sorry, I couldn't get a response. Please try again.";
+      }
+    } catch (error) {
+      console.error('Error getting chatbot response from OpenAI:', error);
+      // Fallback or more specific error handling
+      if (error.response && error.response.status === 401) {
+        return "Error: Invalid OpenAI API key. Please check your configuration.";
+      }
+      if (error.code === 'ENOTFOUND') {
+          return "Error: Could not connect to OpenAI. Please check your internet connection.";
+      }
+      return "Sorry, I encountered an error trying to respond. Please try again later.";
+    }
+  }
 }
 
 module.exports = new LocalLLMService();
