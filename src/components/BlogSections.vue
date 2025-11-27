@@ -51,7 +51,7 @@ export default {
 .blog-sections {
   width: 250px;
   padding: 2rem;
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  background: linear-gradient(135deg, #2c3e50 0%, #EE0000 100%);
   border-radius: 20px;
   color: white;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);

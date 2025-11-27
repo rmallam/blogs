@@ -51,7 +51,7 @@
                     <strong>Select a category from the left to start reading!</strong>
                   </p>
                   <p style="margin-top: 2rem;">
-                    For my full professional background and portfolio, check out my <a href="/" style="color: #3498db; text-decoration: underline;">main portfolio site</a>.
+                    For my full professional background and portfolio, check out my <a href="/" style="color: #EE0000; text-decoration: underline;">main portfolio site</a>.
                   </p>
                 </div>
               </div>
@@ -567,19 +567,52 @@ main {
 
 .blog-welcome {
   text-align: center;
+  max-width: 800px;
 }
 
 .blog-welcome h2 {
   font-size: 2.5rem;
   color: #2c3e50;
   margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
 .blog-welcome p {
   font-size: 1.1rem;
   color: #666;
   line-height: 1.8;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.blog-welcome ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 2rem auto;
+}
+
+.blog-welcome li {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.blog-welcome li:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-welcome a {
+  color: #EE0000;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.blog-welcome a:hover {
+  color: #CC0000;
 }
 
 .blog-list h2 {
@@ -630,7 +663,7 @@ main {
 
 .tag {
   display: inline-block;
-  background: #3498db;
+  background: #EE0000;
   color: white;
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
@@ -640,7 +673,7 @@ main {
 }
 
 .tag:hover {
-  background: #2980b9;
+  background: #CC0000;
 }
 
 .back-button {
@@ -958,7 +991,7 @@ footer {
 }
 
 .share-button {
-  background-color: #3498db;
+  background-color: #EE0000;
   color: white;
   border: none;
   border-radius: 4px;
@@ -972,7 +1005,7 @@ footer {
 }
 
 .share-button:hover {
-  background-color: #2980b9;
+  background-color: #CC0000;
 }
 
 /* Add responsive CSS variables at the root level */

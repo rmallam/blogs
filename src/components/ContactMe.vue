@@ -211,7 +211,7 @@ export default {
 .contact-info {
   flex: 1;
   padding: 4rem;
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  background: linear-gradient(135deg, #2c3e50 0%, #EE0000 100%);
   color: white;
   display: flex;
   flex-direction: column;
@@ -281,7 +281,7 @@ export default {
 .animated-form textarea:focus,
 .animated-form input:valid,
 .animated-form textarea:valid {
-  border-color: #3498db;
+  border-color: #EE0000;
   outline: none;
 }
 
@@ -291,7 +291,7 @@ export default {
 .animated-form textarea:valid + label {
   top: -1.2rem;
   font-size: 0.8rem;
-  color: #3498db;
+  color: #EE0000;
 }
 
 .animated-form textarea {
@@ -323,7 +323,7 @@ export default {
 button {
   width: 100%;
   padding: 1rem;
-  background: #3498db;
+  background: #EE0000;
   color: white;
   border: none;
   border-radius: 8px;
@@ -334,7 +334,7 @@ button {
 }
 
 button:hover {
-  background: #2980b9;
+  background: #CC0000;
   transform: translateY(-2px);
 }
 
