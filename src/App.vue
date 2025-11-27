@@ -6,9 +6,9 @@
         <ul>
           <li class="brand" @click="navigateTo('about')">R's Blog</li>
           <li><a href="/" style="color: inherit; text-decoration: none;">← Portfolio</a></li>
-          <li @click="navigateTo('about')">Home</li>
+          <li @click="navigateTo('about')">About</li>
           <li @click="navigateTo('blogs')">Blogs</li>
-          <li @click="navigateTo('contact')">Contact Me</li>
+          <li @click="navigateTo('contact')">Contact</li>
         </ul>
       </nav>
     </header>
