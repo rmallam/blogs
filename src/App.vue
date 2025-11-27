@@ -4,9 +4,8 @@
     <header class="header">
       <nav>
         <ul>
-          <li class="brand" @click="navigateTo('about')">R's Blog</li>
+          <li class="brand" @click="navigateTo('blogs')">R's Blog</li>
           <li><a href="/" style="color: inherit; text-decoration: none;">← Portfolio</a></li>
-          <li @click="navigateTo('about')">About</li>
           <li @click="navigateTo('blogs')">Blogs</li>
           <li @click="navigateTo('contact')">Contact</li>
         </ul>
@@ -16,13 +15,8 @@
       <div class="content">
         <main>
           <div class="content">
-            <div class="page-content" :class="{ fullWidth: selectedPage === 'about' || selectedPage==='contact' }">
-              <!-- About Me page now rendered via AboutMe component -->
-              <AboutMe 
-                v-if="selectedPage === 'about'" 
-                @navigate="navigateTo"
-              />
-              <ContactMe v-else-if="selectedPage === 'contact'" />
+            <div class="page-content" :class="{ fullWidth: selectedPage === 'contact' }">
+              <ContactMe v-if="selectedPage === 'contact'" />
               <div v-else-if="selectedPage === 'blogs'" class="blogs-page">
                 <BlogSections :sections="blogSections" @select-section="selectSection" />
                 <div class="blog-list" v-if="selectedSection">
@@ -36,6 +30,29 @@
                       </div>
                     </li>
                   </ul>
+                </div>
+                <div class="blog-welcome" v-else>
+                  <h2>Welcome to My Tech Blog</h2>
+                  <p>
+                    This is where I share my thoughts, experiences, and insights on cloud-native technologies, DevSecOps practices, and enterprise architecture. 
+                    With over 15 years in the industry, I've learned a lot and want to give back to the tech community through detailed technical articles and practical guides.
+                  </p>
+                  <p>
+                    <strong>What you'll find here:</strong>
+                  </p>
+                  <ul style="text-align: left; max-width: 600px; margin: 1rem auto; line-height: 1.8;">
+                    <li>🚀 <strong>Cloud Native Technologies:</strong> Kubernetes, OpenShift, containers, and orchestration</li>
+                    <li>🔐 <strong>DevSecOps Practices:</strong> CI/CD pipelines, GitOps, infrastructure as code</li>
+                    <li>☁️ <strong>Multi-Cloud Strategies:</strong> AWS, Azure, and hybrid cloud architectures</li>
+                    <li>🤖 <strong>AI & Machine Learning:</strong> Practical applications and emerging trends</li>
+                    <li>📚 <strong>How-To Guides:</strong> Step-by-step tutorials and best practices</li>
+                  </ul>
+                  <p>
+                    <strong>Select a category from the left to start reading!</strong>
+                  </p>
+                  <p style="margin-top: 2rem;">
+                    For my full professional background and portfolio, check out my <a href="/" style="color: #3498db; text-decoration: underline;">main portfolio site</a>.
+                  </p>
                 </div>
               </div>
               <div v-else-if="selectedPage !== null && selectedPage !== 'blogs'">
@@ -62,7 +79,6 @@
 </template>
 
 <script>
-import AboutMe from './components/AboutMe.vue';
 import ContactMe from './components/ContactMe.vue';
 import BlogSections from './components/BlogSections.vue';
 import BlogComments from './components/BlogComments.vue';
@@ -72,7 +88,6 @@ const md = markdown()
 export default {
   name: 'App',
   components: { 
-    AboutMe, 
     ContactMe, 
     BlogSections,
     BlogComments
@@ -82,7 +97,7 @@ export default {
     console.log('Initial blog sections:', sections); // Debug log
     return {
       blogSections: sections,
-      selectedPage: 'about',
+      selectedPage: 'blogs',
       isSidebarCollapsed: false,
       headings: [],
       selectedSection: null,
@@ -154,9 +169,12 @@ export default {
       );
     },
     navigateTo(page) {
+      // Redirect 'about' to 'blogs' since we removed the About page
       if (page === 'about') {
-        history.pushState({ page: 'about' }, 'About', '#/about');
-      } else if (page === 'blogs') {
+        page = 'blogs';
+      }
+      
+      if (page === 'blogs') {
         history.pushState({ page: 'blogs' }, 'Blogs', '#/blogs');
       } else if (page === 'contact') {
         history.pushState({ page: 'contact' }, 'Contact', '#/contact');
@@ -326,9 +344,7 @@ export default {
       // Parse the current URL hash to determine what to show
       const hash = window.location.hash;
       
-      if (!hash || hash === '#/' || hash === '#/about') {
-        this.navigateTo('about');
-      } else if (hash === '#/blogs') {
+      if (!hash || hash === '#/' || hash === '#/about' || hash === '#/blogs') {
         this.navigateTo('blogs');
       } else if (hash === '#/contact') {
         this.navigateTo('contact');
@@ -363,10 +379,16 @@ export default {
     
     handlePopState(event) {
       if (event.state) {
-        if (event.state.page === 'about' || event.state.page === 'blogs' || event.state.page === 'contact') {
-          this.selectPage(event.state.page);
+        // Redirect 'about' to 'blogs'
+        let page = event.state.page;
+        if (page === 'about') {
+          page = 'blogs';
+        }
+        
+        if (page === 'blogs' || page === 'contact') {
+          this.selectPage(page);
           
-          if (event.state.page === 'blogs' && event.state.section) {
+          if (page === 'blogs' && event.state.section) {
             const section = this.blogSections.find(s => s.name === event.state.section);
             if (section) {
               this.selectSection(section);
@@ -530,7 +552,7 @@ main {
   align-items: flex-start;
 }
 
-.blog-list {
+.blog-list, .blog-welcome {
   flex: 3;  /* Increased from 1 to 3 to give more space to blog content */
   margin-left: 2rem;
   padding: 2rem;
@@ -541,6 +563,23 @@ main {
   min-width: 0; /* Allow content to shrink if needed */
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+.blog-welcome {
+  text-align: center;
+}
+
+.blog-welcome h2 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.blog-welcome p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 1rem;
 }
 
 .blog-list h2 {

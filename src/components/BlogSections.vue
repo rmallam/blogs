@@ -1,18 +1,20 @@
 <template>
-  <div class="blog-sections">
-    <h2>Blog Categories</h2>
-    <div v-if="!sections || sections.length === 0" class="no-blogs">
-      <p>No blog posts found</p>
-      <p class="debug-info">Available sections: {{ sections ? sections.length : 0 }}</p>
-    </div>
-    <div v-else class="sections-list">
-      <div 
-        v-for="section in sections" 
-        :key="section.name"
-        class="section-item"
-        @click="$emit('select-section', section)"
-      >
-        <h3>{{ formatSectionName(section.name) }}</h3>
+  <div class="blog-sections-wrapper">
+    <div class="blog-sections">
+      <h2>Blog Categories</h2>
+      <div v-if="!sections || sections.length === 0" class="no-blogs">
+        <p>No blog posts found</p>
+        <p class="debug-info">Available sections: {{ sections ? sections.length : 0 }}</p>
+      </div>
+      <div v-else class="sections-list">
+        <div 
+          v-for="section in sections" 
+          :key="section.name"
+          class="section-item"
+          @click="$emit('select-section', section)"
+        >
+          <h3>{{ formatSectionName(section.name) }}</h3>
+        </div>
       </div>
     </div>
   </div>
@@ -42,6 +44,10 @@ export default {
 </script>
 
 <style scoped>
+.blog-sections-wrapper {
+  width: 100%;
+}
+
 .blog-sections {
   width: 250px;
   padding: 2rem;
